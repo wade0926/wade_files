@@ -1,0 +1,104 @@
+<?php	
+$url = 'http://search.udn.com/search/searchResult4utf8.jsp?ch=udn.news2014&df=2&rc=15&wc=80&pw=220&mc=&q=%E4%B8%89%E7%AB%8B&fp=1';
+
+$ch = curl_init();
+curl_setopt($ch,CURLOPT_URL,$url);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
+$res_curl = curl_exec($ch);
+curl_close($ch);
+
+//udn 回傳的資料筆數
+$res_num = substr_count($res_curl,'new Array(8);');
+
+//把資料轉進自己的array
+for($i = 0;$i < $res_num;$i++)
+{
+	$res_arr[$i]['source'] = 'UDN';
+	
+	//獲取 link
+	preg_match('/arr\['.$i.'\]\[0\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['link'] = $match[1];
+	
+	//獲取 圖片
+	preg_match('/arr\['.$i.'\]\[1\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['pic'] = $match[1];
+	
+	//獲取 title
+	preg_match('/arr\['.$i.'\]\[2\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['title'] = $match[1];
+	
+	//獲取 分類
+	preg_match('/arr\['.$i.'\]\[3\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['catecory'] = $match[1];
+			
+	//獲取 日期
+	preg_match('/arr\['.$i.'\]\[4\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['date'] = $match[1];
+	
+	//獲取 摘要
+	preg_match('/arr\['.$i.'\]\[5\] = \'(.*?)\';/',$res_curl,$match);
+	$res_arr[$i]['brief'] = $match[1];
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>News Search</title>
+</head>
+<body>
+
+<h1 align="center" style="margin-top:50px;">News Search</h1>
+
+<table border="1" align="center">
+	<th>媒體</th>
+    <th>來源</th>
+    <th>標題</th>
+    <th>分類</th>
+    <th>圖片</th>
+    <th>日期</th>
+    <th>摘要</th>    
+    
+    <?php
+	$i = 1;
+	
+	foreach($res_arr as $row)
+	{		
+		?>
+		<tr>
+        	<!-- 項次 -->
+			<td><?php echo $i++;?></td>
+        
+			<!-- 媒體 -->
+			<td><?php echo $row['source'];?></td>
+			
+			<!-- 標題 -->
+			<td>
+            	<a href="<?php echo $row['link'];?>" target="_blank">
+                	<?php echo $row['title'];?>
+                </a>				
+            </td>
+			
+			<!-- 分類 -->
+			<td><?php echo $row['catecory'];?></td>
+			
+            <!-- 圖片 -->
+			<td>
+            	<img src="<?php echo $row['pic'];?>" height="50" width="50" />				
+            </td>
+            
+			<!-- 日期 -->
+			<td><?php echo $row['date'];?></td>
+			
+			<!-- 摘要 -->
+			<td><?php echo $row['brief'];?></td>
+		</tr>
+        <?php
+	}
+	?>    
+</table>
+
+</body>
+</html>
