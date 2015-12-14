@@ -1,0 +1,18 @@
+<?php
+$data = '
+NAS Model: AS-602T
+NAS Firmware: 2.5.1.RB62
+NAS SN: AT1211602MB022C
+Router Firmware: none
+Router Model: TP-LINK, TL-WR1043ND, 1.0
+Router Status: ŸSuccess or fail.
+';
+
+preg_match_all('/:(.*?)$/ism',$data,$match);
+
+foreach($match[1] as $row)
+{
+	echo $row;
+	echo '<br />';	
+}
+?>
